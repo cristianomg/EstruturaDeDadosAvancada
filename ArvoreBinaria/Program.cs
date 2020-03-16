@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ArvoreBinaria
 {
-    class Program
+    class Program2
     {
         static void Main(string[] args)
         {
@@ -21,7 +21,7 @@ namespace ArvoreBinaria
                 Console.WriteLine("4 - Parar o programa.");
                 Console.WriteLine("Escolha uma opção: ");
                 string opc = Console.ReadLine();
-                switch(opc)
+                switch (opc)
                 {
                     case "1":
                         Console.WriteLine("Infome o id da cidade:");

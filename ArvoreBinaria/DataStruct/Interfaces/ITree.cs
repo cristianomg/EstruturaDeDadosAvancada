@@ -9,8 +9,12 @@ namespace ArvoreBinaria.DataStruct.Interfaces
 {
     public interface ITree <TValue>
     {
-        TValue Insert(uint key, TValue value, Node<TValue> root = null);
-        TValue Search(uint key, Node<TValue>root = null);
+        List<Node<TValue>> Nodes
+        {
+            get;
+        }
+        TValue Insert(UInt64 key, TValue value, Node<TValue> root = null);
+        TValue Search(UInt64 key, Node<TValue>root = null);
         IEnumerator<TValue> Iterator();
     }
 }

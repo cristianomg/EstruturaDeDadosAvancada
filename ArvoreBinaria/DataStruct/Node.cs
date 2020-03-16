@@ -8,7 +8,7 @@ namespace ArvoreBinaria.DataStruct
 {
     public class Node <TValue>
     {
-        public uint Key { get; set; }
+        public UInt64 Key { get; set; }
         public TValue Value { get; set; }
         public Node<TValue> Right { get; set; }
         public Node<TValue> Left { get; set; }

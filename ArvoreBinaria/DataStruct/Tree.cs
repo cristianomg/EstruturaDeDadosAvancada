@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace ArvoreBinaria.DataStruct
 {
     public class Tree<TValue> : ITree<TValue>
+        where TValue : class
     {
         private Node<TValue> root;
 
@@ -18,7 +19,7 @@ namespace ArvoreBinaria.DataStruct
             Nodes = new List<Node<TValue>>();
         }
 
-        public TValue Insert(uint key, TValue value, Node<TValue> root = null)
+        public TValue Insert(UInt64 key, TValue value, Node<TValue> root = null)
         {
             if (root == null)
             {
@@ -67,7 +68,7 @@ namespace ArvoreBinaria.DataStruct
                         Right = null
                     };
                     Nodes.Add(root);
-                return root.Value;
+                    return root.Value;
                 }
                 else
                 {
@@ -83,7 +84,7 @@ namespace ArvoreBinaria.DataStruct
             throw new NotImplementedException();
         }
 
-        public TValue Search(uint key, Node<TValue>root = null)
+        public TValue Search(UInt64 key, Node<TValue>root = null)
         {
             if (root == null) 
                 root = this.root;
@@ -92,13 +93,13 @@ namespace ArvoreBinaria.DataStruct
             else if (key > root.Key)
             {
                 if (root.Right == null)
-                    throw new Exception("Não encontrado.");
+                    return null;
                 return Search(key, root.Right);
             }
             else
             {
                 if (root.Left == null)
-                    throw new Exception("Não encontrado.");
+                    return null;
                 return Search(key, root.Left);
             }
         }
