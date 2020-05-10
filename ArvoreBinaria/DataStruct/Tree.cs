@@ -1,4 +1,5 @@
 ﻿using ArvoreBinaria.DataStruct.Interfaces;
+using ArvoreBinaria.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,14 +13,7 @@ namespace ArvoreBinaria.DataStruct
     {
         private Node<TValue> root;
 
-        public List<Node<TValue>> Nodes { get; private set; }
-
-        public Tree()
-        {
-            Nodes = new List<Node<TValue>>();
-        }
-
-        public TValue Insert(UInt64 key, TValue value, Node<TValue> root = null)
+        public TValue Insert(ulong key, TValue value, Node<TValue> root = null)
         {
             if (root == null)
             {
@@ -32,9 +26,9 @@ namespace ArvoreBinaria.DataStruct
                     Key = key,
                     Value = value,
                     Left = null,
-                    Right = null
+                    Right = null,
+                    Parent = null
                 };
-                Nodes.Add(this.root);
                 return this.root.Value;
             }
             else if (key > root.Key)
@@ -46,9 +40,9 @@ namespace ArvoreBinaria.DataStruct
                         Key = key,
                         Value = value,
                         Left = null,
-                        Right = null
+                        Right = null,
+                        Parent = root
                     };
-                    Nodes.Add(root);
                     return root.Value;
                 }
                 else
@@ -65,9 +59,10 @@ namespace ArvoreBinaria.DataStruct
                         Key = key,
                         Value = value,
                         Left = null,
-                        Right = null
+                        Right = null,
+                        Parent = root
+                        
                     };
-                    Nodes.Add(root);
                     return root.Value;
                 }
                 else
@@ -79,17 +74,12 @@ namespace ArvoreBinaria.DataStruct
                 throw new Exception("Chave já adicionada.");
         }
 
-        public IEnumerator<TValue> Iterator()
-        {
-            throw new NotImplementedException();
-        }
-
-        public TValue Search(UInt64 key, Node<TValue>root = null)
+        public Node<TValue> Search(ulong key, Node<TValue>root = null)
         {
             if (root == null) 
                 root = this.root;
             if (key == root.Key)
-                return root.Value;
+                return root;
             else if (key > root.Key)
             {
                 if (root.Right == null)
@@ -103,6 +93,149 @@ namespace ArvoreBinaria.DataStruct
                 return Search(key, root.Left);
             }
         }
+
+        public List<Node<TValue>> VisitTree(VisitType type)
+        {
+            var refVisitedNodes = new List<Node<TValue>>();
+            var result = new List<Node<TValue>>();
+            switch (type)
+            {
+                case VisitType.PreOrder:
+                    result = PreOrder(this.root, ref refVisitedNodes);
+                    break;
+                case VisitType.InOrder:
+                    result =  InOrder(this.root, ref refVisitedNodes);
+                    break;
+                case VisitType.PosOrder:
+                    result = PosOrder(this.root, ref refVisitedNodes);
+                    break;
+            }
+            return result;
+        }
+
+        private List<Node<TValue>> PreOrder(Node<TValue> node, ref List<Node<TValue>> visitedNodes)
+        {
+            if (node != null)
+            {
+                visitedNodes.Add(node);
+                PreOrder(node.Left, ref visitedNodes);
+                PreOrder(node.Right, ref visitedNodes);
+            }
+
+            return visitedNodes;
+        }
+
+        private List<Node<TValue>> InOrder(Node<TValue> node, ref List<Node<TValue>> visitedNodes)
+        {
+            if (node != null)
+            {
+                InOrder(node.Left, ref visitedNodes);
+                visitedNodes.Add(node);
+                InOrder(node.Right, ref visitedNodes);
+            }
+            return visitedNodes;
+
+        }
+        private List<Node<TValue>> PosOrder(Node<TValue> node, ref List<Node<TValue>> visitedNodes)
+        {
+            if (node != null)
+            {
+                PosOrder(node.Left, ref visitedNodes);
+                PosOrder(node.Right, ref visitedNodes);
+                visitedNodes.Add(node);
+            }
+            return visitedNodes;
+
+        }
+
+        public Tuple<ulong, ulong> GetMinMaxValues()
+        {
+            var VisitedTree = VisitTree(VisitType.InOrder);
+
+            var minValue = VisitedTree.Min(x => x.Key);
+
+            var maxValue = VisitedTree.Max(x => x.Key);
+
+            return new Tuple<ulong, ulong>(minValue, maxValue);
+
+        }
+
+        public long GetAverage()
+        {
+            var VisitedTree = VisitTree(VisitType.InOrder);
+
+            var avg = VisitedTree.Sum(x => Convert.ToInt64(x.Key)) / VisitedTree.Count();
+
+            return avg;
+        }
+
+        public int GetAmountNodes() => VisitTree(VisitType.InOrder).Count();
+
+        public int GetAmountLeaf() => VisitTree(VisitType.InOrder).Count(x => x.Left == null && x.Right == null);
+
+        public void RemoveNode(ulong key)
+        {
+            var node = Search(key);
+            if (node != null)
+            {
+                if (node.Parent == null)
+                {
+                    this.root = RemoveCurrent(node);
+                }
+                else
+                {
+                    node.Parent = RemoveCurrent(node);
+                }
+            }
+            
+        }
+
+        private Node<TValue> RemoveCurrent(Node<TValue> node)
+        {
+            if (node.Right != null && node.Left != null)
+            {
+                var refVisitedTree = new List<Node<TValue>>();
+                var largestRightInSubtree = Search(this.InOrder(node.Left, ref refVisitedTree).Max(x => x.Key));
+
+                node.Left.Parent = largestRightInSubtree;
+                node.Right.Parent = largestRightInSubtree;
+
+                largestRightInSubtree.Parent = node.Parent;
+                largestRightInSubtree.Left = node.Left != largestRightInSubtree ? node.Left : null;
+                largestRightInSubtree.Right = node.Right;
+
+
+                return largestRightInSubtree;
+
+            }
+            else if (node.Left != null)
+            {
+                node.Left.Parent = node.Parent;
+                return node.Left;
+            }
+            else if (node.Right != null)
+            {
+                node.Right.Parent = node.Parent;
+                return node.Right;
+            }
+
+            else return null;
+        }
+
+        public int GetHeight()
+        {
+            var VisitedTree = VisitTree(VisitType.InOrder);
+            var ParentList = new List<string>();
+
+            VisitedTree.ForEach(x =>
+            {
+                if (!ParentList.Contains(x.Parent.ToString()))
+                    ParentList.Add(x.Parent.ToString());
+            });
+
+            return ParentList.Count();
+        }
+
     }
 
 

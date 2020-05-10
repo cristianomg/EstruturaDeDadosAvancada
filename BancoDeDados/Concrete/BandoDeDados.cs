@@ -58,7 +58,7 @@ namespace BancoDeDados.Concrete
             if (Tables.ContainsKey(table))
             {
                 var _table = Tables[table].Struct;
-                if (_table.Nodes.Any())
+                if (_table.VisitTree(ArvoreBinaria.Enum.VisitType.InOrder).Any())
                 {
                     return null;
                 }
@@ -70,7 +70,7 @@ namespace BancoDeDados.Concrete
         {
             if (Tables.ContainsKey(table))
             {
-                return Tables[table].Struct.Search(id);
+                return Tables[table].Struct.Search(id).Value;
             }
             return null;
         }

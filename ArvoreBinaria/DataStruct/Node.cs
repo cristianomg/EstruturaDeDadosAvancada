@@ -13,5 +13,7 @@ namespace ArvoreBinaria.DataStruct
         public Node<TValue> Right { get; set; }
         public Node<TValue> Left { get; set; }
 
+        public Node<TValue> Parent { get; set; }
+
     }
 }

@@ -47,6 +47,7 @@
     <Compile Include="DataStruct\Interfaces\ITree.cs" />
     <Compile Include="DataStruct\Node.cs" />
     <Compile Include="DataStruct\Tree.cs" />
+    <Compile Include="Enum\VisitType.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
