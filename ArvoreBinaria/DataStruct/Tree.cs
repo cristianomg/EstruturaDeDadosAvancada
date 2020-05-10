@@ -184,7 +184,10 @@ namespace ArvoreBinaria.DataStruct
                 }
                 else
                 {
-                    node.Parent = RemoveCurrent(node);
+                    if (node.Parent.Left == node)
+                        node.Parent.Left = RemoveCurrent(node);
+                    else
+                        node.Parent.Right = RemoveCurrent(node);
                 }
             }
             
@@ -196,6 +199,11 @@ namespace ArvoreBinaria.DataStruct
             {
                 var refVisitedTree = new List<Node<TValue>>();
                 var largestRightInSubtree = Search(this.InOrder(node.Left, ref refVisitedTree).Max(x => x.Key));
+
+                if (largestRightInSubtree.Parent.Left == largestRightInSubtree)
+                    largestRightInSubtree.Parent.Left = null;
+                else
+                    largestRightInSubtree.Parent.Right = null;
 
                 node.Left.Parent = largestRightInSubtree;
                 node.Right.Parent = largestRightInSubtree;
@@ -224,17 +232,21 @@ namespace ArvoreBinaria.DataStruct
 
         public int GetHeight()
         {
-            var VisitedTree = VisitTree(VisitType.InOrder);
-            var ParentList = new List<string>();
-
-            VisitedTree.ForEach(x =>
-            {
-                if (!ParentList.Contains(x.Parent.ToString()))
-                    ParentList.Add(x.Parent.ToString());
-            });
-
-            return ParentList.Count();
+            return CalculateHeight(this.root);
         }
+
+        private int CalculateHeight(Node<TValue> node)
+        {
+            if (node == null) return -1;
+
+            var heightLeft = CalculateHeight(node.Left);
+            var heightRight = CalculateHeight(node.Right);
+
+            if (heightLeft > heightRight)
+                return heightLeft + 1;
+            else return heightRight + 1;
+        }
+
 
     }
 

@@ -107,7 +107,7 @@ namespace ArvoreBinaria
                         Console.WriteLine(tree.GetAmountLeaf());
                         break;
                     case "8":
-                        Console.WriteLine("Vou implementar");
+                        Console.WriteLine(tree.GetHeight());
                         break;
                     case "9":
                         try
